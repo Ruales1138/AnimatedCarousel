@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, Image, Dimensions, SafeAreaView, Animated } from 'react-native';
-// import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const imagenes = [
   'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
@@ -51,15 +51,17 @@ function BackDrop({ scrollX }) {
           }]}/>
       })}
 
-      {/* <LinearGradient
-        colors={['trasnparent', 'white']}
+      <LinearGradient
+        colors={['rgba(255,255,255,0)', 'rgba(255,255,255,1)']}
+        start={[0, 0]}
+        end={[0, 1]}
         style={{
           height: ALTURA_BACKDROP,
           width,
           position: 'absolute',
           top: 0
         }}
-      /> */}
+      />
     </View>
   )
 };
