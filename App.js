@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View, FlatList, Image, Dimensions, SafeAreaView, Animated } from 'react-native';
+// import { LinearGradient } from 'expo-linear-gradient';
 
 const imagenes = [
   'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
@@ -13,13 +14,62 @@ const imagenes = [
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const ANCHO_CONTENEDOR = width * 0.7;
+const ESPACIO_LATERAL = (width - ANCHO_CONTENEDOR) / 2;
 const ESPACIO = 10;
+const ALTURA_BACKDROP = height * 0.5;
+
+function BackDrop({ scrollX }) {
+  return (
+    <View 
+      style={([{ 
+        height: ALTURA_BACKDROP, 
+        width, 
+        position: 'absolute', 
+        top: 0 
+      }],
+      StyleSheet.absoluteFillObject
+    )}>
+      {imagenes.map((imagen, index) => {
+        const inputRange = [
+          (index - 1) * ANCHO_CONTENEDOR,
+          index * ANCHO_CONTENEDOR,
+          (index + 1) * ANCHO_CONTENEDOR
+        ];
+        const outputRange = [0, 1, 0];
+        const opacity = scrollX.interpolate({ inputRange, outputRange })
+
+        return <Animated.Image 
+          source={{uri: imagen}} 
+          key={index}
+          blurRadius={10}
+          style={[{ 
+            height: ALTURA_BACKDROP, 
+            width, 
+            position: 'absolute', 
+            top: 0,
+            opacity
+          }]}/>
+      })}
+
+      {/* <LinearGradient
+        colors={['trasnparent', 'white']}
+        style={{
+          height: ALTURA_BACKDROP,
+          width,
+          position: 'absolute',
+          top: 0
+        }}
+      /> */}
+    </View>
+  )
+};
 
 export default function App() {
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   return (
     <SafeAreaView style={styles.container}>
+      <BackDrop scrollX={scrollX}/>
       <StatusBar hidden />
       <Animated.FlatList
         onScroll={Animated.event(
@@ -29,7 +79,7 @@ export default function App() {
         data={imagenes} 
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{paddingTop: 200}}
+        contentContainerStyle={{ paddingTop: 200, paddingHorizontal: ESPACIO_LATERAL }}
         decelerationRate={0}
         snapToInterval={ANCHO_CONTENEDOR}
         scrollEventThrottle={16}
@@ -39,19 +89,23 @@ export default function App() {
             (index - 1) * ANCHO_CONTENEDOR,
             index * ANCHO_CONTENEDOR,
             (index + 1) * ANCHO_CONTENEDOR
-          ]
+          ];
+          const outputRange = [0, -50, 0];
+          const translateY = scrollX.interpolate({ inputRange, outputRange })
+
           return (
             <View style={{width: ANCHO_CONTENEDOR}}>
-              <View 
+              <Animated.View 
                 style={{
                   marginHorizontal: ESPACIO,
                   padding: ESPACIO,
                   borderRadius: 34,
                   backgroundColor: '#fff',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  transform: [{ translateY }]
                 }}>
                   <Image source={{uri: item}} style={styles.posterImage}/>
-                </View>
+                </Animated.View>
             </View>
           )
         }}
