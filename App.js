@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { StyleSheet, Text, View, FlatList, Image, Dimensions, SafeAreaView, Animated } from 'react-native';
 
 const imagenes = [
@@ -11,15 +12,20 @@ const imagenes = [
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-
 const ANCHO_CONTENEDOR = width * 0.7;
 const ESPACIO = 10;
 
 export default function App() {
+  const scrollX = React.useRef(new Animated.Value(0)).current;
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar hidden />
-      <FlatList 
+      <Animated.FlatList
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX }}}],
+          { useNativeDriver: true }
+        )} 
         data={imagenes} 
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -29,6 +35,11 @@ export default function App() {
         scrollEventThrottle={16}
         keyExtractor={item => item}
         renderItem={({ item, index }) => {
+          const inputRange = [
+            (index - 1) * ANCHO_CONTENEDOR,
+            index * ANCHO_CONTENEDOR,
+            (index + 1) * ANCHO_CONTENEDOR
+          ]
           return (
             <View style={{width: ANCHO_CONTENEDOR}}>
               <View 
